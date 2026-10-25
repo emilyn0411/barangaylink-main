@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/images/barangaylink-favicon.png" />
+    <title>Services | BarangayLink</title>
+    <meta name="description" content="Barangay document services available in BarangayLink." />
+    <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Resident service browser; service cards are generated from the shared catalog in js/app.js. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
+    <header class="site-header resident-header">
+      <div class="container nav-wrap">
+        <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+        <a href="../index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
+        <div class="nav-actions"><a href="profile.html" class="btn btn-ghost">Profile</a><a href="../index.html" class="btn btn-primary">Logout</a></div>
+      </div>
+    </header>
+    <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
+    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
+      <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
+    </aside>
+
+    <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
+    <main class="page-shell">
+      <div class="container">
+        <section class="page-head services-head">
+          <div>
+            <p class="eyebrow">Available services</p>
+            <h1>Barangay services, in one place</h1>
+            <p>Find the right service, review what you need, and start a request through one consistent process.</p>
+          </div>
+          <div class="service-count" aria-live="polite"><strong data-service-count>18</strong><span>services available</span></div>
+        </section>
+
+        <!-- Search and category controls feed the catalog renderer; retain their data attributes. -->
+        <section class="service-browser" aria-label="Browse barangay services">
+          <div class="service-tools">
+            <div class="category-tabs" role="tablist" aria-label="Service categories">
+              <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="all">All Services</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Certificates & Clearances">Certificates &amp; Clearances</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Business & Permits">Business &amp; Permits</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Community Services">Community Services</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Resident Services">Resident Services</button>
+            </div>
+          </div>
+          <div class="service-grid" data-service-grid aria-live="polite"></div>
+          <p class="empty-state hidden" data-service-empty><strong>No services found</strong><br />Try another keyword or browse all services.</p>
+        </section>
+
+        <!-- Selected service details and requirements are filled by the catalog renderer. -->
+        <section class="service-detail hidden" id="service-detail" aria-live="polite">
+          <div class="service-detail-main">
+            <div class="service-detail-heading"><span class="service-icon" data-detail-icon aria-hidden="true"></span><div><p class="eyebrow" data-detail-category></p><h2 data-detail-name></h2></div></div>
+            <p data-detail-description></p>
+            <div class="detail-columns">
+              <div><h3>Requirements</h3><ul class="check-list" data-detail-requirements></ul></div>
+              <div><h3>Who may request</h3><p data-detail-who></p><h3>Information needed</h3><p data-detail-information></p></div>
+            </div>
+          </div>
+          <aside class="service-detail-aside"><span class="mini-label">Processing information</span><strong data-detail-processing></strong><p>Requests follow the standard Pending, Under Review, Approved or Rejected, Ready for Release, and Released status flow.</p><a class="btn btn-primary block-btn" data-detail-request href="request.html">Start Request</a></aside>
+        </section>
+      </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+  </body>
+</html>

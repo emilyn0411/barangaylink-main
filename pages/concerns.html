@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report a Concern | BarangayLink</title>
+    <meta name="description" content="Report community concerns such as road problems, street lights, garbage collection, drainage, and noise complaints." />
+    <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Shared resident/staff concern page. Role-specific panels are toggled by js/app.js based on demo auth state. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
+    <header class="site-header resident-header">
+      <div class="container nav-wrap">
+        <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+        <a href="../index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
+        <div class="nav-actions"><a href="profile.html" class="btn btn-ghost">Profile</a><a href="../index.html" class="btn btn-primary">Logout</a></div>
+      </div>
+    </header>
+    <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
+    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
+      <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
+    </aside>
+
+      <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
+      <main class="page-shell">
+      <div class="container">
+        <section class="page-head" data-resident-only>
+          <p class="eyebrow">Community concerns</p>
+          <h1>Report a Community Concern</h1>
+          <p>Let the barangay know about road problems, street lights, garbage collection, drainage issues, noise complaints, and other community concerns.</p>
+        </section>
+
+        <section class="page-head hidden" data-staff-only>
+          <p class="eyebrow">Barangay admin</p>
+          <h1>Reported Concerns</h1>
+          <p>Concerns submitted by residents. Update the status as the barangay works on each one.</p>
+        </section>
+
+        <!-- Staff concern queue; status selectors are populated and saved by renderStaffConcerns. -->
+        <section class="table-card hidden" data-staff-only aria-label="Reported concerns from residents">
+          <div class="search-filter-row">
+            <div class="field">
+              <label for="concern-search">Search Concerns</label>
+              <input id="concern-search" type="search" placeholder="Search by ID, type, location, or resident" />
+            </div>
+            <div class="field">
+              <label for="concern-status-filter">Status</label>
+              <select id="concern-status-filter">
+                <option value="all">All Statuses</option>
+                <option value="submitted">Submitted</option>
+                <option value="progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Reported concerns table">
+              <thead>
+                <tr>
+                  <th>Concern ID</th>
+                  <th>Concern</th>
+                  <th>Location</th>
+                  <th>Reported By</th>
+                  <th>Urgency</th>
+                  <th>Date Reported</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody data-staff-concern-rows></tbody>
+            </table>
+            <div class="empty-state hidden" data-staff-concern-empty>
+              <h2>No concerns found</h2>
+              <p>Resident-reported concerns will appear here.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="request-card" data-resident-only>
+          <!-- Resident concern form; step validation and local persistence are handled by initAdditionalRequestForms. -->
+          <form class="request-form" data-concern-form data-success-message="Your concern has been reported successfully. The barangay will review it and update the status below." novalidate>
+            <div class="step-indicator" aria-live="polite">
+              <span class="step-label" data-step-label>Step 1 of 4</span>
+            </div>
+
+            <div class="step-panel active">
+              <fieldset>
+                <legend>Step 1: Type of Concern</legend>
+                <div class="form-grid two-columns">
+                  <div class="field">
+                    <label for="concern-type">Concern Type</label>
+                    <select id="concern-type" name="concernType" required>
+                      <option value="">Select a concern type</option>
+                      <option value="Road Problem">Road Problem</option>
+                      <option value="Street Light">Street Light</option>
+                      <option value="Garbage Collection">Garbage Collection</option>
+                      <option value="Drainage Issue">Drainage Issue</option>
+                      <option value="Noise Complaint">Noise Complaint</option>
+                      <option value="Other">Other Community Concern</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="concern-location">Location</label>
+                    <input id="concern-location" name="location" type="text" placeholder="Street, purok, or landmark" required />
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="step-panel">
+              <fieldset>
+                <legend>Step 2: Concern Details</legend>
+                <div class="form-grid">
+                  <div class="field full-width">
+                    <label for="concern-description">Description</label>
+                    <textarea id="concern-description" name="description" rows="4" placeholder="Describe the concern in detail" required></textarea>
+                  </div>
+
+                  <div class="field">
+                    <label for="concern-urgency">Urgency Level</label>
+                    <select id="concern-urgency" name="urgency" required>
+                      <option value="">Select urgency</option>
+                      <option value="Low">Low &ndash; can wait for regular schedule</option>
+                      <option value="Medium">Medium &ndash; needs attention soon</option>
+                      <option value="High">High &ndash; safety risk, needs urgent action</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="concern-photo">Photo (optional)</label>
+                    <input id="concern-photo" name="photo" type="file" accept="image/*" />
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="step-panel">
+              <fieldset>
+                <legend>Step 3: Reporter Information</legend>
+                <div class="form-grid two-columns">
+                  <div class="field">
+                    <label for="concern-full-name">Full Name</label>
+                    <input id="concern-full-name" name="fullName" type="text" placeholder="Juan Dela Cruz" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="concern-contact-number">Contact Number</label>
+                    <input id="concern-contact-number" name="contactNumber" type="tel" placeholder="0917-123-4567" required />
+                  </div>
+
+                  <div class="field full-width">
+                    <label for="concern-address">Address</label>
+                    <input id="concern-address" name="address" type="text" placeholder="House No., Street, Brgy." required />
+                  </div>
+                </div>
+
+                <div class="inline-options">
+                  <label class="checkbox-inline">
+                    <input type="checkbox" name="anonymous" />
+                    Submit this report anonymously
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="step-panel">
+              <fieldset>
+                <legend>Step 4: Review</legend>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span>Concern Type</span>
+                    <strong data-review-type>-</strong>
+                  </div>
+                  <div class="detail-item">
+                    <span>Location</span>
+                    <strong data-review-location>-</strong>
+                  </div>
+                  <div class="detail-item">
+                    <span>Urgency</span>
+                    <strong data-review-urgency>-</strong>
+                  </div>
+                  <div class="detail-item full-width">
+                    <span>Description</span>
+                    <strong data-review-description>-</strong>
+                  </div>
+                  <div class="detail-item">
+                    <span>Reported By</span>
+                    <strong data-review-reporter>-</strong>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="step-actions">
+              <button type="button" class="btn btn-ghost" data-prev>Previous</button>
+              <button type="button" class="btn btn-primary" data-next>Next</button>
+              <button type="submit" class="btn btn-primary hidden" data-submit>Submit Report</button>
+            </div>
+
+            <p class="form-message" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <!-- Resident concern list reads the same records as the staff queue. -->
+        <section class="request-card" aria-label="My reported concerns" data-resident-only>
+          <div class="status-row">
+            <h2>My Reported Concerns</h2>
+            <a href="history.html" class="text-link">View request history</a>
+          </div>
+
+          <div class="request-list concern-list" data-my-concerns></div>
+        </section>
+      </div>
+    </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+  </body>
+</html>

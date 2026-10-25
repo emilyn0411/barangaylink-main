@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/images/barangaylink-favicon.png" />
+    <title>Create Account | BarangayLink</title>
+    <meta name="description" content="Register for BarangayLink." />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="auth-page">
+    <!-- Resident registration UI; the current prototype validates the form but does not create a server account. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
+    <header class="site-header resident-header">
+      <div class="container nav-wrap">
+         <a href="../index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
+        </div>
+    </header>
+    <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
+    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
+      <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
+    </aside>
+
+    <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
+    <main class="auth-main">
+      <section class="auth-card wide-card" aria-labelledby="register-title">
+        <div class="auth-header-block">
+          <p class="eyebrow">Create an account</p>
+          <h1 id="register-title">Register</h1>
+        </div>
+
+        <!-- Registration fields are validated by initAuth; no account is persisted in this prototype. -->
+        <form class="auth-form" novalidate>
+          <div class="form-grid two-columns">
+            <div class="field">
+              <label for="full-name">Full Name</label>
+              <input id="full-name" name="fullName" type="text" placeholder="Juan Dela Cruz" required />
+            </div>
+
+            <div class="field">
+              <label for="contact-number">Contact Number</label>
+              <input id="contact-number" name="contactNumber" type="tel" placeholder="0917-123-4567" required />
+            </div>
+
+            <div class="field full-width">
+              <label for="address">Address</label>
+              <input id="address" name="address" type="text" placeholder="House No., Street, Brgy." required />
+            </div>
+
+            <div class="field">
+              <label for="register-email">Email</label>
+              <div class="email-suffix-wrap"><input id="register-email" name="email" type="text" placeholder="juandelacruz" autocomplete="off" autocapitalize="none" spellcheck="false" data-gmail-username required /><span class="email-suffix">@gmail.com</span></div>
+            </div>
+
+            <div class="field">
+              <label for="register-password">Password</label>
+              <div class="password-wrap">
+                <input id="register-password" name="password" type="password" placeholder="At least 6 characters" minlength="6" required />
+                <button type="button" class="toggle-password" aria-label="Show password">Show</button>
+              </div>
+            </div>
+
+          </div>
+
+          <button type="submit" class="btn btn-primary block-btn">Create Account</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="../js/app.js"></script>
+  </body>
+</html>
